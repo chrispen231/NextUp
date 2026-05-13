@@ -72,7 +72,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 transition-colors">
-      <Link href="/" className="text-xl font-bold text-blue-600 flex items-center gap-2">
+      <div className="w-10" /> {/* Spacer to balance the layout */}
+      
+      <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
         <Zap className="fill-blue-600" />
         NextUp
       </Link>
@@ -86,34 +88,16 @@ export default function Navbar() {
           {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
         </button>
 
-        <div className="h-6 w-px bg-gray-200 dark:bg-gray-800 mx-1" />
-
         {loading ? (
           <Loader2 className="animate-spin text-blue-600" size={20} />
         ) : user ? (
-          <div className="flex items-center gap-4">
-            <Link href="/lfa" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-4">
-              <Shield size={20} />
-            </Link>
-            {profile?.role === 'PLAYER' && (
-              <Link href="/upload" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <Upload size={20} />
-              </Link>
+          <Link href="/dashboard" className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden border-2 border-white dark:border-gray-800 shadow-sm hover:scale-105 transition-transform">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              displayName?.charAt(0) || '?'
             )}
-            <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-gray-900 dark:text-white leading-none mb-1">{displayName}</p>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none">Dashboard</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden border-2 border-white dark:border-gray-800 shadow-sm group-hover:scale-105 transition-transform">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  displayName?.charAt(0) || '?'
-                )}
-              </div>
-            </Link>
-          </div>
+          </Link>
         ) : (
           <Link href="/login" className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
             <User size={18} />

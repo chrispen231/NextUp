@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
 import { Loader2 } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import DashboardHeader from '@/components/DashboardHeader';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -45,8 +46,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors">
       <Sidebar role={role} userId={user.id} />
-      <div className="flex-1">
-        {children}
+      <div className="flex-1 flex flex-col">
+        <DashboardHeader user={user} profile={profile} />
+        <main className="p-8">
+          {children}
+        </main>
       </div>
     </div>
   );
