@@ -111,9 +111,13 @@ export default function DashboardPage() {
             <button className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100">
               <Bell size={20} />
             </button>
-            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
-              {user?.user_metadata?.display_name?.charAt(0) || user?.email?.charAt(0)}
-            </div>
+            <Link href="/dashboard/profile" className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform">
+              {user?.user_metadata?.avatar_url || user?.metadata?.avatar_url ? (
+                <img src={user?.user_metadata?.avatar_url || user?.metadata?.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                user?.user_metadata?.display_name?.charAt(0) || user?.email?.charAt(0)
+              )}
+            </Link>
           </div>
         </header>
 

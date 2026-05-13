@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
 import { ArrowLeft, Loader2, User, Mail, MapPin, Trophy, Camera, Save, Activity, Globe } from 'lucide-react';
 import Link from 'next/link';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function ProfileEditorPage() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function ProfileEditorPage() {
     preferredFoot: 'Right',
     organization: '',
     licenseNumber: '',
+    avatarUrl: '',
   });
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export default function ProfileEditorPage() {
           preferredFoot: meta.preferred_foot || 'Right',
           organization: meta.organization || '',
           licenseNumber: meta.license_number || '',
+          avatarUrl: meta.avatar_url || '',
         });
       }
       setFetching(false);
@@ -87,6 +90,7 @@ export default function ProfileEditorPage() {
             preferred_foot: formData.preferredFoot,
             organization: formData.organization,
             license_number: formData.licenseNumber,
+            avatar_url: formData.avatarUrl,
           }
         })
         .eq('id', user.id);
@@ -122,14 +126,11 @@ export default function ProfileEditorPage() {
         <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm mb-10">
           <div className="h-32 bg-blue-600 relative">
             <div className="absolute -bottom-12 left-12">
-              <div className="relative group">
-                <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-blue-600 text-4xl font-bold border-4 border-white shadow-lg overflow-hidden">
-                  {formData.displayName.charAt(0)}
-                </div>
-                <button className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl">
-                  <Camera size={20} />
-                </button>
-              </div>
+              <ImageUpload 
+                userId={user.id} 
+                currentUrl={formData.avatarUrl} 
+                onUpload={(url) => setFormData({ ...formData, avatarUrl: url })} 
+              />
             </div>
           </div>
           

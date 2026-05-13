@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { supabase } from '@/infrastructure/database/supabase';
-import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, Instagram, Twitter, ExternalLink, Activity, Info, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PlayerProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -61,7 +61,11 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
             <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-100">
               <div className="aspect-square bg-gray-100 relative">
                 <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-8xl font-bold">
-                  {player.display_name?.charAt(0)}
+                  {metadata.avatar_url ? (
+                    <img src={metadata.avatar_url} alt={player.display_name} className="w-full h-full object-cover" />
+                  ) : (
+                    player.display_name?.charAt(0)
+                  )}
                 </div>
                 {player.status === 'VERIFIED' && (
                   <div className="absolute top-6 right-6 bg-blue-500 text-white p-2 rounded-full shadow-lg">
@@ -96,10 +100,10 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                 
                 <div className="flex justify-center gap-4">
                   <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-blue-600 transition-colors">
-                    <Instagram size={20} />
+                    <Globe size={20} />
                   </button>
                   <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-blue-400 transition-colors">
-                    <Twitter size={20} />
+                    <Share2 size={20} />
                   </button>
                 </div>
               </div>
