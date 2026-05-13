@@ -47,16 +47,22 @@ export default function RegisterPage() {
 
     try {
       // 1. Sign up user with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            display_name: formData.displayName,
-            role: formData.role,
-          }
-        }
-      });
+const { data: authData, error: authError } = await supabase.auth.signUp({
+  email: formData.email,
+  password: formData.password,
+  options: {
+    data: {
+      display_name: formData.displayName,
+      role: formData.role,
+    }
+  }
+});
+
+if (authError) throw authError;
+
+// 2. Done — the trigger auto-creates the actors row
+// Just redirect or show a success message
+router.push('/dashboard');
 
       if (authError) throw authError;
 
