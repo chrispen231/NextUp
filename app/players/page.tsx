@@ -65,19 +65,27 @@ export default function PlayersPage() {
             {filteredPlayers.map((player) => (
               <div key={player.id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all group">
                 <div className="aspect-[4/5] bg-gray-100 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                    <Link href={`/players/${player.id}`} className="w-full bg-white text-gray-900 py-3 rounded-xl font-bold text-sm text-center">
-                      View Profile
-                    </Link>
-                  </div>
-                  {/* Placeholder for player image */}
+                  <Link href={`/players/${player.id}`} className="absolute inset-0 z-10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                      <span className="w-full bg-white text-gray-900 py-3 rounded-xl font-bold text-sm text-center">
+                        View Profile
+                      </span>
+                    </div>
+                  </Link>
+                  {/* Player image or initials */}
                   <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                    <span className="text-4xl font-bold">{player.display_name?.charAt(0)}</span>
+                    {player.metadata?.avatar_url ? (
+                      <img src={player.metadata.avatar_url} alt={player.display_name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-4xl font-bold">{player.display_name?.charAt(0)}</span>
+                    )}
                   </div>
                 </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-bold text-gray-900 truncate">{player.display_name}</h3>
+                    <Link href={`/players/${player.id}`} className="font-bold text-gray-900 truncate hover:text-blue-600 transition-colors">
+                      {player.display_name}
+                    </Link>
                     {player.status === 'VERIFIED' && <ShieldCheck size={18} className="text-blue-500" />}
                   </div>
                   <div className="flex items-center justify-between text-sm">

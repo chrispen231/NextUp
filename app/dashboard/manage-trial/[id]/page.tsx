@@ -120,12 +120,18 @@ export default function ManageTrialPage({ params }: { params: Promise<{ id: stri
               {applicants.map((app) => (
                 <div key={app.id} className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all hover:shadow-md">
                   <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-300 text-2xl font-bold border border-gray-50">
-                      {app.player.display_name?.charAt(0)}
-                    </div>
+                    <Link href={`/players/${app.player.id}`} className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-300 text-2xl font-bold border border-gray-50 overflow-hidden hover:opacity-80 transition-opacity flex-shrink-0">
+                      {app.player.metadata?.avatar_url ? (
+                        <img src={app.player.metadata.avatar_url} alt={app.player.display_name} className="w-full h-full object-cover" />
+                      ) : (
+                        app.player.display_name?.charAt(0)
+                      )}
+                    </Link>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-bold text-gray-900">{app.player.display_name}</h3>
+                        <Link href={`/players/${app.player.id}`} className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                          {app.player.display_name}
+                        </Link>
                         {app.player.status === 'VERIFIED' && <ShieldCheck size={18} className="text-blue-500" />}
                       </div>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-500">

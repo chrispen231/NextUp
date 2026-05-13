@@ -22,10 +22,11 @@ export default function RegisterPage() {
     // Player specific
     position: '',
     dateOfBirth: '',
-    // Agent/Club specific
+    // Agent/Club/Player specific
     organization: '',
     licenseNumber: '',
-    location: '',
+    country: '',
+    countyState: '',
   });
 
   const roles = [
@@ -83,7 +84,8 @@ router.push('/dashboard');
                 date_of_birth: formData.dateOfBirth,
                 organization: formData.organization,
                 license_number: formData.licenseNumber,
-                location: formData.location,
+                country: formData.country,
+                countyState: formData.countyState,
               }
             }
           ]);
@@ -226,18 +228,28 @@ router.push('/dashboard');
               </div>
             )}
 
-            {formData.role === 'CLUB' && (
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location / City</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
                 <input
                   type="text"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none"
-                  placeholder="e.g. Monrovia"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g. Liberian"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                 />
               </div>
-            )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">County / State</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none"
+                  placeholder="e.g. Montserrado"
+                  value={formData.countyState}
+                  onChange={(e) => setFormData({ ...formData, countyState: e.target.value })}
+                />
+              </div>
+            </div>
 
             <button
               disabled={loading}

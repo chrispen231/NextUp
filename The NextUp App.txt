@@ -1,0 +1,32 @@
+The NextUp app is a comprehensive platform designed to elevate Liberian football talent. It serves multiple user types, each with a tailored experience and specific tools to facilitate discovery, recruitment, and anti-trafficking efforts.
+Core Pages of the Application
+Feed (/): The main discovery hub. It displays a curated stream of player video clips and highlight reels, allowing talent to be discovered through visual proof of their skills.
+LFA Center (/lfa): The official portal for the Liberia Football Association. It provides real-time information such as league standings, upcoming fixtures, and top scorer statistics for the First Division.
+Inbox (/inbox): A centralized messaging system that allows secure communication between players, agents, scouts, and club representatives.
+Profile (/profile): A dynamic page that changes based on the user's role. For players, it acts as a digital CV with position data and video history; for clubs and agents, it showcases their organization and verified credentials.
+Upload (/upload): A specialized interface for players to submit new match clips, managing file sizes and adding descriptive tags to their highlights.
+Trials (/trials): A management dashboard where clubs list open recruitment opportunities and players can apply for a chance to go pro.
+Audit/Admin (/admin): A high-security dashboard used by administrators to monitor for predatory behavior and ensure all third-party agents are verified and legitimate.
+WhatsApp Bridge (/wa-bridge): A technical integration page used to facilitate easy clip sharing from common mobile messaging platforms.
+User Roles & Permissions
+The app features a role-based access control system to ensure every user has the right tools for their specific goals:
+1. Player
+Permissions: Can upload video clips and manage their digital scouting profile.
+Key Actions: Share highlight reels, participate in trial opportunities, and receive messages from verified agents and clubs.
+Goal: To get noticed and signed by professional organizations while remaining protected from unverified recruiters.
+2. Club Representative
+Permissions: Access to the discovery feed and the exclusive Trials management page.
+Key Actions: Host open trials, scout players directly from their videos, and contact talent or their representatives.
+Goal: To identify and recruit the next generation of professional talent for their squad.
+3. Agent (International & Local)
+Permissions: Access to talent discovery tools and messaging.
+Key Actions: Filter players by position or county, verify talent through videos, and manage a roster of represented players.
+Goal: To discover promising athletes and facilitate their career transitions to higher-level leagues.
+4. Scout
+Permissions: Specialized viewing access to the Feed and player data.
+Key Actions: Identify "hidden gems" in rural counties and provide professional assessments that help clubs and agents make informed decisions.
+Goal: To act as the eyes and ears of the Liberian football ecosystem.
+5. Admin (LFA / Anti-Trafficking)
+Permissions: Total platform visibility, including access to the Audit dashboard.
+Key Actions: Flag suspicious messages, verify agent credentials, and investigate potential recruitment scams to protect young athletes.
+Goal: To maintain the safety, integrity, and credibility of the Liberian football talent pipeline.

@@ -43,7 +43,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
   const achievements = metadata.achievements || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 transition-colors">
       {/* Hero Header */}
       <div className="bg-blue-600 h-64 md:h-80 w-full relative">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
@@ -58,9 +58,9 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Profile Card */}
           <div className="space-y-6">
-            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-100">
-              <div className="aspect-square bg-gray-100 relative">
-                <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-8xl font-bold">
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+              <div className="aspect-square bg-gray-100 dark:bg-gray-800 relative">
+                <div className="absolute inset-0 flex items-center justify-center text-gray-300 dark:text-gray-700 text-8xl font-bold">
                   {metadata.avatar_url ? (
                     <img src={metadata.avatar_url} alt={player.display_name} className="w-full h-full object-cover" />
                   ) : (
@@ -74,35 +74,35 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                 )}
               </div>
               <div className="p-8">
-                <h1 className="text-3xl font-extrabold text-gray-900 mb-1">{player.display_name}</h1>
-                <p className="text-blue-600 font-bold text-lg mb-6">{metadata.position || 'Player'}</p>
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{player.display_name}</h1>
+                <p className="text-blue-600 dark:text-blue-400 font-bold text-lg mb-6">{metadata.position || 'Player'}</p>
                 
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-medium">Club</span>
-                    <span className="text-gray-900 font-bold">{metadata.club || 'Free Agent'}</span>
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Club</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.club || 'Free Agent'}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-medium">Age</span>
-                    <span className="text-gray-900 font-bold">
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Age</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">
                       {metadata.date_of_birth ? (new Date().getFullYear() - new Date(metadata.date_of_birth).getFullYear()) : '??'} yrs
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 font-medium">Location</span>
-                    <span className="text-gray-900 font-bold">{metadata.location || 'Liberia'}</span>
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Location</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.location || 'Liberia'}</span>
                   </div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 mb-4 flex items-center justify-center gap-2">
+                <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none mb-4 flex items-center justify-center gap-2">
                   <Mail size={18} /> Contact Player
                 </button>
                 
                 <div className="flex justify-center gap-4">
-                  <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-blue-600 transition-colors">
+                  <button className="p-3 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     <Globe size={20} />
                   </button>
-                  <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-blue-400 transition-colors">
+                  <button className="p-3 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl hover:text-blue-400 transition-colors">
                     <Share2 size={20} />
                   </button>
                 </div>
@@ -110,14 +110,14 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
             </div>
 
             {achievements.length > 0 && (
-              <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-                <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <Trophy size={20} className="text-blue-600" /> Achievements
                 </h3>
                 <ul className="space-y-4">
                   {achievements.map((item: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                      <div className="w-5 h-5 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <li key={i} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="w-5 h-5 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Trophy size={12} />
                       </div>
                       {item}
@@ -130,35 +130,35 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
 
           {/* Right Column: Bio & Stats */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-gray-100 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 md:p-12 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                 <Info size={24} className="text-blue-600" /> Biography
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                 {metadata.bio || 'This player has not provided a biography yet.'}
               </p>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-gray-100 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 md:p-12 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
                 <Activity size={24} className="text-blue-600" /> Performance Stats
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="p-6 bg-gray-50 rounded-3xl text-center">
-                  <p className="text-3xl font-extrabold text-gray-900 mb-1">{stats.matches}</p>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Matches</p>
+                <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl text-center transition-colors">
+                  <p className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{stats.matches}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Matches</p>
                 </div>
-                <div className="p-6 bg-blue-50 rounded-3xl text-center">
-                  <p className="text-3xl font-extrabold text-blue-600 mb-1">{stats.goals}</p>
-                  <p className="text-xs text-blue-400 font-bold uppercase tracking-widest">Goals</p>
+                <div className="p-6 bg-blue-50 dark:bg-blue-900/30 rounded-3xl text-center transition-colors">
+                  <p className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 mb-1">{stats.goals}</p>
+                  <p className="text-xs text-blue-400 dark:text-blue-500 font-bold uppercase tracking-widest">Goals</p>
                 </div>
-                <div className="p-6 bg-gray-50 rounded-3xl text-center">
-                  <p className="text-3xl font-extrabold text-gray-900 mb-1">{stats.assists}</p>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Assists</p>
+                <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl text-center transition-colors">
+                  <p className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{stats.assists}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Assists</p>
                 </div>
-                <div className="p-6 bg-gray-50 rounded-3xl text-center">
-                  <p className="text-3xl font-extrabold text-gray-900 mb-1">{stats.minutes}</p>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Minutes</p>
+                <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl text-center transition-colors">
+                  <p className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{stats.minutes}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Minutes</p>
                 </div>
               </div>
             </div>

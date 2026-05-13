@@ -2,7 +2,8 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Share2, Clock, Users } from 'lucide-react';
+import { supabase } from '@/infrastructure/database/supabase';
+import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Share2, Clock, Users, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TrialDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -91,13 +92,13 @@ export default function TrialDetailPage({ params }: { params: Promise<{ id: stri
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12 px-6 transition-colors">
       <div className="max-w-4xl mx-auto">
-        <Link href="/trials" className="flex items-center text-sm text-gray-500 hover:text-blue-600 mb-8 transition-colors">
+        <Link href="/trials" className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mb-8 transition-colors">
           <ArrowLeft size={16} className="mr-1" /> Back to all trials
         </Link>
 
-        <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
           <div className="bg-blue-600 p-10 md:p-14 text-white">
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
@@ -116,23 +117,23 @@ export default function TrialDetailPage({ params }: { params: Promise<{ id: stri
 
           <div className="p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-2xl">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+              <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl transition-colors">
+                <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
                   <Calendar size={20} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Date</p>
-                  <p className="font-bold text-gray-900">{new Date(trial.trial_date).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Date</p>
+                  <p className="font-bold text-gray-900 dark:text-white">{new Date(trial.trial_date).toLocaleDateString()}</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4 p-5 bg-gray-50 rounded-2xl md:col-span-2">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+              <div className="flex items-start gap-4 p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl md:col-span-2 transition-colors">
+                <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Location</p>
-                  <p className="font-bold text-gray-900">{trial.location}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">Location</p>
+                  <p className="font-bold text-gray-900 dark:text-white">{trial.location}</p>
                 </div>
               </div>
             </div>
@@ -140,19 +141,19 @@ export default function TrialDetailPage({ params }: { params: Promise<{ id: stri
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-8">
                 <section>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
-                  <p className="text-gray-600 leading-relaxed text-lg">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Description</h2>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
                     {trial.description}
                   </p>
                 </section>
 
                 {trial.requirements && trial.requirements.length > 0 && (
                   <section>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Requirements</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Requirements</h2>
                     <ul className="space-y-3">
                       {trial.requirements.map((req: string, i: number) => (
-                        <li key={i} className="flex items-center gap-3 text-gray-600">
-                          <div className="w-6 h-6 bg-green-50 text-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <li key={i} className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+                          <div className="w-6 h-6 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center flex-shrink-0">
                             <ShieldCheck size={14} />
                           </div>
                           {req}
@@ -164,11 +165,11 @@ export default function TrialDetailPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div className="space-y-6">
-                <div className="bg-blue-50 p-8 rounded-3xl border border-blue-100">
-                  <h3 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                <div className="bg-blue-50 dark:bg-gray-800 p-8 rounded-3xl border border-blue-100 dark:border-gray-700 transition-colors">
+                  <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-4 flex items-center gap-2">
                     <Users size={20} /> {applied ? 'Applied!' : 'Ready to join?'}
                   </h3>
-                  <p className="text-blue-800 text-sm mb-6 leading-relaxed">
+                  <p className="text-blue-800 dark:text-blue-200 text-sm mb-6 leading-relaxed">
                     {applied 
                       ? 'Your application has been sent to the club. They will review your profile shortly.'
                       : 'Apply now to secure your spot. Space is limited for this trial.'}
@@ -178,21 +179,21 @@ export default function TrialDetailPage({ params }: { params: Promise<{ id: stri
                     onClick={handleApply}
                     className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg mb-3 flex items-center justify-center gap-2 ${
                       applied 
-                        ? 'bg-green-500 text-white shadow-green-100 cursor-default' 
-                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'
+                        ? 'bg-green-500 text-white shadow-green-100 dark:shadow-none cursor-default' 
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200 dark:shadow-none'
                     }`}
                   >
                     {applying ? <Loader2 className="animate-spin" /> : applied ? <ShieldCheck size={20} /> : 'Apply for Trial'}
                     {applied ? 'Application Sent' : ''}
                   </button>
-                  <button className="w-full bg-white text-blue-600 border border-blue-200 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+                  <button className="w-full bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-gray-700 py-4 rounded-xl font-bold hover:bg-blue-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
                     <Share2 size={18} /> Share
                   </button>
                 </div>
                 
                 <div className="p-6 text-center">
-                  <p className="text-xs text-gray-400 font-medium">Organized by {trial.club?.display_name}</p>
-                  <p className="text-xs text-blue-600 font-bold mt-1 cursor-pointer hover:underline">View Club Profile</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Organized by {trial.club?.display_name}</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-bold mt-1 cursor-pointer hover:underline">View Club Profile</p>
                 </div>
               </div>
             </div>
