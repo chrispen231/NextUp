@@ -65,6 +65,7 @@ export default function ProfileEditorPage() {
           organization: meta.organization || '',
           licenseNumber: meta.license_number || '',
           avatarUrl: meta.avatar_url || '',
+          coverUrl: meta.cover_url || '',
         });
       }
 
