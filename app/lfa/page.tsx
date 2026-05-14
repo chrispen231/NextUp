@@ -99,6 +99,7 @@ export default function LFA_CenterPage() {
                   </div>
                 ))}
               </div>
+            </div>
           </div>
         </div>
       </main>
