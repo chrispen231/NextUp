@@ -30,6 +30,7 @@ export default function ProfileEditorPage() {
     organization: '',
     licenseNumber: '',
     avatarUrl: '',
+    coverUrl: '',
   });
 
   useEffect(() => {
