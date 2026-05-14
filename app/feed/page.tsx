@@ -56,6 +56,9 @@ export default function FeedPage() {
       setLoading(false);
     };
 
+    init();
+  }, []);
+
   const handleLike = async (clipId: string) => {
     if (!user) return;
 
