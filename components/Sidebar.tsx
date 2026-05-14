@@ -41,24 +41,28 @@ export default function Sidebar({ role, userId }: SidebarProps) {
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsOpen(false)} />}
 
       {/* Sidebar Navigation */}
-      <nav className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 z-50 p-6 flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="mb-8 px-4" />
-        
-        {commonNav.map(item => (
-          <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${isActive(item.href) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-            <item.icon size={20} /> {item.name}
-          </Link>
-        ))}
+      <nav className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 z-50 flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="mb-8 px-4">
+            <Link href="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">NextUp</Link>
+          </div>
+          
+          {commonNav.map(item => (
+            <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${isActive(item.href) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+              <item.icon size={20} /> {item.name}
+            </Link>
+          ))}
 
-        <div className="h-px bg-gray-100 dark:bg-gray-800 my-4" />
+          <div className="h-px bg-gray-100 dark:bg-gray-800 my-4" />
 
-        {roleSpecificLinks.map(item => (
-          <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${isActive(item.href) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
-            <item.icon size={20} /> {item.name}
-          </Link>
-        ))}
+          {roleSpecificLinks.map(item => (
+            <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${isActive(item.href) ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+              <item.icon size={20} /> {item.name}
+            </Link>
+          ))}
+        </div>
 
-        <div className="mt-auto">
+        <div className="p-6 border-t border-gray-100 dark:border-gray-800">
           <button onClick={handleSignOut} className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 font-bold transition-colors">
             <LogOut size={20} /> Sign out
           </button>
