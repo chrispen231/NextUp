@@ -3,24 +3,33 @@
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
-import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2 } from 'lucide-react';
+import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2, Play } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PlayerProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const resolvedParams = use(params);
   const [player, setPlayer] = useState<any>(null);
+  const [clips, setClips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPlayer = async () => {
-      const { data, error } = await supabase
-        .from('actors')
-        .select('*')
-        .eq('id', resolvedParams.id)
-        .single();
-      
-      if (data) setPlayer(data);
+      const [playerResponse, clipsResponse] = await Promise.all([
+        supabase
+          .from('actors')
+          .select('*')
+          .eq('id', resolvedParams.id)
+          .single(),
+        supabase
+          .from('clips')
+          .select('*')
+          .eq('player_id', resolvedParams.id)
+          .order('created_at', { ascending: false }),
+      ]);
+
+      if (playerResponse.data) setPlayer(playerResponse.data);
+      if (clipsResponse.data) setClips(clipsResponse.data);
       setLoading(false);
     };
 
@@ -171,6 +180,44 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                   <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Minutes</p>
                 </div>
               </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 md:p-12 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
+              <div className="flex items-center justify-between mb-8 gap-3">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Play size={24} className="text-blue-600" /> Highlights
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{clips.length} clip{clips.length === 1 ? '' : 's'}</span>
+              </div>
+
+              {clips.length > 0 ? (
+                <div className="grid gap-6 lg:grid-cols-2">
+                  {clips.map((clip) => (
+                    <div key={clip.id} className="rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm transition-colors bg-gray-50 dark:bg-gray-950">
+                      <div className="aspect-video bg-black relative">
+                        <video
+                          src={clip.video_url}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          controls
+                          preload="metadata"
+                        />
+                      </div>
+                      <div className="p-5">
+                        <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">{clip.title || 'Highlight Reel'}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{clip.description || 'Player highlight clip'}</p>
+                        <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
+                          <span>{new Date(clip.created_at).toLocaleDateString()}</span>
+                          <span>{clip.tags?.length ? `${clip.tags.length} tag${clip.tags.length === 1 ? '' : 's'}` : 'No tags'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-12 text-center">
+                  <p className="text-gray-500 dark:text-gray-400">No highlight videos have been uploaded for this player yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
