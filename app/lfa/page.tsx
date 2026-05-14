@@ -59,8 +59,13 @@ export default function LFA_CenterPage() {
               <button 
                 key={l.id} 
                 onClick={() => handleSelectLeague(l)}
-                className={`px-6 py-3 rounded-xl font-bold whitespace-nowrap ${selectedLeague?.id === l.id ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-800'}`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${
+                  selectedLeague?.id === l.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-800'
+                }`}
               >
+                {l.logo_url && <img src={l.logo_url} alt={l.name} className="w-6 h-6 object-contain rounded-full" />}
                 {l.name} ({l.gender})
               </button>
             ))}

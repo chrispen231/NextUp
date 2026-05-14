@@ -63,29 +63,58 @@ export default function DashboardPage() {
 
   if (loading) return null;
 
+  const requestVerification = async () => {
+    try {
+      const { error } = await supabase
+        .from('actors')
+        .update({ status: 'PENDING' })
+        .eq('id', user.id);
+      if (error) throw error;
+      setProfile({ ...profile, status: 'PENDING' });
+      alert('Verification request submitted!');
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   const role = profile?.role || user?.user_metadata?.role;
   const displayName = profile?.display_name || user?.user_metadata?.display_name || 'User';
+  const status = profile?.status || 'UNVERIFIED';
 
   return (
     <div className="max-w-4xl">
       <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm mb-8 transition-colors">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome, {displayName}!
-        </h2>
+        <div className="flex justify-between items-start">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Welcome, {displayName}!
+          </h2>
+          <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${
+            status === 'VERIFIED' ? 'bg-green-100 text-green-700' :
+            status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+            'bg-gray-100 text-gray-500'
+          }`}>
+            {status}
+          </span>
+        </div>
         <p className="text-gray-500 dark:text-gray-400">
           You are currently registered as a <span className="font-semibold text-blue-600 dark:text-blue-400 capitalize">{role || 'member'}</span>. 
-          Complete your verification to unlock all features.
+          {status === 'UNVERIFIED' && ' Complete your verification to unlock all features.'}
         </p>
         
         <div className="mt-6 flex flex-wrap gap-4">
           {role === 'CLUB' && (
-            <Link href="/dashboard/post-trial" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-lg shadow-gray-200 dark:shadow-none">
+            <Link href="/dashboard/post-trial" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all">
               Post a Trial
             </Link>
           )}
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none">
-            Verify Identity
-          </button>
+          {status === 'UNVERIFIED' && (
+            <button 
+              onClick={requestVerification}
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all"
+            >
+              Verify Identity
+            </button>
+          )}
           <Link href="/dashboard/profile" className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
             Edit Profile
           </Link>
