@@ -1,4 +1,4 @@
-import { Actor, Player, Agent } from '../entities/Actor';
+import { Actor, Player, Agent } from './entities/Actor';
 
 export class CommunicationPolicy {
   /**
