@@ -167,8 +167,16 @@ export default function ProfileEditorPage() {
         </Link>
 
         <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm mb-10 transition-colors">
-          <div className="h-32 bg-blue-600 relative">
-            <div className="absolute -bottom-12 left-12">
+          <div className="h-64 bg-blue-600 relative">
+            <div className="absolute inset-0">
+              <ImageUpload 
+                userId={user.id} 
+                currentUrl={formData.coverUrl} 
+                onUpload={(url) => setFormData({ ...formData, coverUrl: url })} 
+                isCover
+              />
+            </div>
+            <div className="absolute -bottom-12 left-12 z-20">
               <ImageUpload 
                 userId={user.id} 
                 currentUrl={formData.avatarUrl} 

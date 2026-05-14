@@ -77,18 +77,20 @@ function getRoleSpecificLinks(role: string, userId: string) {
     ],
     CLUB: [
       { name: 'Trials', href: '/dashboard/trials', icon: Search },
+      { name: 'Talent Pool', href: '/players', icon: User },
       { name: 'Inbox', href: '/dashboard/inbox', icon: Mail },
       { name: 'Profile', href: '/dashboard/profile', icon: User },
     ],
     AGENT: [
+      { name: 'Talent Pool', href: '/players', icon: User },
       { name: 'Inbox', href: '/dashboard/inbox', icon: Mail },
       { name: 'Profile', href: '/dashboard/profile', icon: User },
     ],
     SCOUT: [
+      { name: 'Talent Pool', href: '/players', icon: User },
       { name: 'Inbox', href: '/dashboard/inbox', icon: Mail },
       { name: 'Profile', href: '/dashboard/profile', icon: User },
-    ],
-    ADMIN: [
+    ],    ADMIN: [
       { name: 'Audit Dashboard', href: '/admin', icon: AlertTriangle },
     ]
   };

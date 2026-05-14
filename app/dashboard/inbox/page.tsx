@@ -26,10 +26,14 @@ export default function InboxPage() {
           const otherParticipantId = conv.participant_ids.find((id: string) => id !== user.id);
           const { data: actor } = await supabase
             .from('actors')
-            .select('display_name')
+            .select('display_name, metadata')
             .eq('id', otherParticipantId)
             .single();
-          return { ...conv, otherParticipantName: actor?.display_name || 'Unknown' };
+          return { 
+            ...conv, 
+            otherParticipantName: actor?.display_name || 'Unknown',
+            otherParticipantAvatar: actor?.metadata?.avatar_url || null
+          };
         }));
         setConversations(enrichedConversations);
       }
@@ -47,8 +51,12 @@ export default function InboxPage() {
         {conversations.length > 0 ? conversations.map(conv => (
           <Link key={conv.id} href={`/dashboard/inbox/${conv.id}`} className="flex items-center justify-between p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-colors hover:shadow-md">
             <div className="flex items-center gap-4">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl font-bold">
-                {conv.otherParticipantName?.charAt(0)}
+              <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 overflow-hidden">
+                {conv.otherParticipantAvatar ? (
+                  <img src={conv.otherParticipantAvatar} alt={conv.otherParticipantName} className="w-full h-full object-cover" />
+                ) : (
+                  conv.otherParticipantName?.charAt(0)
+                )}
               </div>
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white">{conv.otherParticipantName}</h4>

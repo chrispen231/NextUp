@@ -8,12 +8,13 @@ interface ImageUploadProps {
   userId: string;
   onUpload: (url: string) => void;
   currentUrl?: string;
+  isCover?: boolean;
 }
 
-export default function ImageUpload({ userId, onUpload, currentUrl }: ImageUploadProps) {
+export default function ImageUpload({ userId, onUpload, currentUrl, isCover = false }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
 
-  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
 
@@ -23,20 +24,17 @@ export default function ImageUpload({ userId, onUpload, currentUrl }: ImageUploa
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-
-      // 1. Upload the file to Supabase Storage
+      const fileName = `${userId}/${isCover ? 'cover' : 'avatar'}-${Math.random()}.${fileExt}`;
+      
       const { error: uploadError } = await supabase.storage
-        .from('nextup-media') // Ensure this bucket exists in Supabase
-        .upload(filePath, file);
+        .from('nextup-media')
+        .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // 2. Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('nextup-media')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       onUpload(publicUrl);
     } catch (error: any) {
@@ -47,12 +45,12 @@ export default function ImageUpload({ userId, onUpload, currentUrl }: ImageUploa
   };
 
   return (
-    <div className="relative group">
-      <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-blue-600 text-4xl font-bold border-4 border-white shadow-lg overflow-hidden relative">
+    <div className={`relative group ${isCover ? 'w-full h-64' : 'w-24 h-24'}`}>
+      <div className={`bg-white rounded-3xl flex items-center justify-center text-blue-600 border-4 border-white shadow-lg overflow-hidden relative ${isCover ? 'w-full h-full' : 'w-24 h-24'}`}>
         {currentUrl ? (
-          <img src={currentUrl} alt="Avatar" className="w-full h-full object-cover" />
+          <img src={currentUrl} alt="Upload" className="w-full h-full object-cover" />
         ) : (
-          <span className="opacity-50">?</span>
+          <Upload className="opacity-50" />
         )}
         
         {uploading && (
@@ -63,12 +61,12 @@ export default function ImageUpload({ userId, onUpload, currentUrl }: ImageUploa
       </div>
       
       <label className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl cursor-pointer">
-        <Camera size={20} />
+        <Camera size={32} />
         <input
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={uploadAvatar}
+          onChange={uploadImage}
           disabled={uploading}
         />
       </label>
