@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
-import { ArrowLeft, Loader2, User, Mail, MapPin, Trophy, Camera, Save, Activity, Globe } from 'lucide-react';
+import { ArrowLeft, Loader2, User, Mail, MapPin, Trophy, Camera, Save, Activity, Globe, Play, Trash2, Tag } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/ImageUpload';
 
@@ -13,6 +13,7 @@ export default function ProfileEditorPage() {
   const [fetching, setFetching] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [clips, setClips] = useState<any[]>([]);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [formData, setFormData] = useState({
@@ -65,6 +66,16 @@ export default function ProfileEditorPage() {
           avatarUrl: meta.avatar_url || '',
         });
       }
+
+      // Fetch user's clips
+      const { data: clipsData } = await supabase
+        .from('clips')
+        .select('*')
+        .eq('player_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (clipsData) setClips(clipsData);
+
       setFetching(false);
     };
 
@@ -114,6 +125,27 @@ export default function ProfileEditorPage() {
       setMessage({ type: 'error', text: err.message || 'Failed to update profile' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClip = async (clipId: string) => {
+    if (!confirm('Are you sure you want to delete this video? This action cannot be undone.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('clips')
+        .delete()
+        .eq('id', clipId)
+        .eq('player_id', user.id); // Ensure user can only delete their own clips
+
+      if (error) throw error;
+
+      setClips(clips.filter(clip => clip.id !== clipId));
+      setMessage({ type: 'success', text: 'Video deleted successfully!' });
+      setTimeout(() => setMessage(null), 3000);
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to delete video' });
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -321,6 +353,61 @@ export default function ProfileEditorPage() {
             </button>
           </form>
         </div>
+
+        {/* Videos Section */}
+        {role === 'PLAYER' && (
+          <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm mb-10 transition-colors">
+            <div className="p-12">
+              <div className="flex items-center justify-between mb-8 gap-3">
+                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Play size={24} className="text-blue-600" /> My Videos
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{clips.length} video{clips.length === 1 ? '' : 's'}</span>
+              </div>
+
+              {clips.length > 0 ? (
+                <div className="grid gap-6 lg:grid-cols-2">
+                  {clips.map((clip) => (
+                    <div key={clip.id} className="rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm transition-colors bg-gray-50 dark:bg-gray-950">
+                      <div className="aspect-video bg-black relative">
+                        <video
+                          src={clip.video_url}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          controls
+                          preload="metadata"
+                        />
+                      </div>
+                      <div className="p-5">
+                        <div className="flex items-start justify-between mb-2">
+                          <p className="text-lg font-bold text-gray-900 dark:text-white">{clip.title || 'Highlight Reel'}</p>
+                          <button
+                            onClick={() => handleDeleteClip(clip.id)}
+                            className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30"
+                            title="Delete video"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{clip.description || 'Player highlight clip'}</p>
+                        <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
+                          <span>{new Date(clip.created_at).toLocaleDateString()}</span>
+                          <span>{clip.tags?.length ? `${clip.tags.length} tag${clip.tags.length === 1 ? '' : 's'}` : 'No tags'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-12 text-center">
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">No videos uploaded yet.</p>
+                  <Link href="/upload" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                    Upload your first highlight video
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
