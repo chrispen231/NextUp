@@ -75,11 +75,11 @@ export default function LFA_CenterPage() {
             {/* Standings */}
             <div className="bg-white dark:bg-gray-900 rounded-[2rem] p-6 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2"><Shield size={20} /> League Standings</h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {standings.map((team, i) => (
-                  <div key={team.id} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                    <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">{i + 1}. {team.team_name}</span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400 text-sm sm:text-base">{team.points} pts</span>
+                  <div key={team.id} className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <span className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm md:text-base">{i + 1}. {team.team_name}</span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400 text-xs sm:text-sm md:text-base">{team.points} pts</span>
                   </div>
                 ))}
               </div>
@@ -88,18 +88,17 @@ export default function LFA_CenterPage() {
             {/* Top Scorers */}
             <div className="bg-white dark:bg-gray-900 rounded-[2rem] p-6 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2"><Trophy size={20} /> Top Scorers</h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {scorers.map(player => (
-                  <div key={player.id} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">{player.player_name}</span>
-                      <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{player.team_name}</span>
+                  <div key={player.id} className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div className="flex flex-col truncate pr-2">
+                      <span className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm md:text-base truncate">{player.player_name}</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">{player.team_name}</span>
                     </div>
-                    <span className="font-bold text-green-600 dark:text-green-400 text-sm sm:text-base">{player.goals} goals</span>
+                    <span className="font-bold text-green-600 dark:text-green-400 text-xs sm:text-sm md:text-base whitespace-nowrap">{player.goals} goals</span>
                   </div>
                 ))}
               </div>
-            </div>
           </div>
         </div>
       </main>
