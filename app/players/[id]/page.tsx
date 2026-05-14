@@ -1,11 +1,13 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
 import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PlayerProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const [player, setPlayer] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -48,9 +50,9 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
       <div className="bg-blue-600 h-64 md:h-80 w-full relative">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="max-w-6xl mx-auto px-6 pt-12">
-          <Link href="/players" className="flex items-center text-sm text-blue-100 hover:text-white mb-6 transition-colors">
-            <ArrowLeft size={16} className="mr-1" /> Back to players
-          </Link>
+          <button onClick={() => router.back()} className="flex items-center text-sm text-blue-100 hover:text-white mb-6 transition-colors">
+            <ArrowLeft size={16} className="mr-1" /> Back
+          </button>
         </div>
       </div>
 
@@ -80,17 +82,25 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400 dark:text-gray-500 font-medium">Club</span>
-                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.club || 'Free Agent'}</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.organization || 'Free Agent'}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 dark:text-gray-500 font-medium">Age</span>
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Nationality</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.country || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">County/State</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.countyState || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Height / Weight</span>
                     <span className="text-gray-900 dark:text-gray-200 font-bold">
-                      {metadata.date_of_birth ? (new Date().getFullYear() - new Date(metadata.date_of_birth).getFullYear()) : '??'} yrs
+                      {metadata.height ? `${metadata.height}m` : '??'} / {metadata.weight ? `${metadata.weight}kg` : '??'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400 dark:text-gray-500 font-medium">Location</span>
-                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.location || 'Liberia'}</span>
+                    <span className="text-gray-400 dark:text-gray-500 font-medium">Preferred Foot</span>
+                    <span className="text-gray-900 dark:text-gray-200 font-bold">{metadata.preferred_foot || 'N/A'}</span>
                   </div>
                 </div>
 

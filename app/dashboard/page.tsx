@@ -115,10 +115,9 @@ export default function DashboardPage() {
                         <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{trial.trial_applications[0].count} Applicants</p>
                         <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{trial.status}</p>
                       </div>
-                      <Link href={`/dashboard/manage-trial/${trial.id}`} className="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        <ArrowRight size={18} />
-                      </Link>
-                    </div>
+                      <Link href={`/dashboard/trials/${trial.id}`} className="p-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                          <ArrowRight size={18} />
+                        </Link>                    </div>
                   </div>
                 ))}
               </div>
