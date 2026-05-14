@@ -14,6 +14,7 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [otherParticipant, setOtherParticipant] = useState<any>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -24,6 +25,24 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
       }
       setCurrentUser(user);
 
+      // 1. Fetch conversation and other participant
+      const { data: conv } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', resolvedParams.id)
+        .single();
+      
+      if (conv) {
+        const otherId = conv.participant_ids.find((id: string) => id !== user.id);
+        const { data: actor } = await supabase
+          .from('actors')
+          .select('id, display_name, metadata')
+          .eq('id', otherId)
+          .single();
+        setOtherParticipant(actor);
+      }
+
+      // 2. Fetch messages
       const { data } = await supabase
         .from('messages')
         .select('*, sender:sender_id(display_name)')
@@ -60,9 +79,22 @@ export default function MessageThreadPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] p-8">
-      <Link href="/dashboard/inbox" className="flex items-center text-sm text-gray-500 hover:text-blue-600 mb-6 transition-colors">
-        <ArrowLeft size={16} className="mr-1" /> Back to Inbox
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/dashboard/inbox" className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors">
+          <ArrowLeft size={16} className="mr-1" /> Back
+        </Link>
+        <Link href={`/players/${otherParticipant?.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 overflow-hidden">
+            {otherParticipant?.metadata?.avatar_url ? (
+              <img src={otherParticipant.metadata.avatar_url} alt={otherParticipant.display_name} className="w-full h-full object-cover" />
+            ) : (
+              otherParticipant?.display_name?.charAt(0)
+            )}
+          </div>
+          <h2 className="font-bold text-gray-900 dark:text-white">{otherParticipant?.display_name || 'Chat'}</h2>
+        </Link>
+        <div className="w-16" />
+      </div>
       
       <div className="flex-1 overflow-y-auto space-y-6 mb-6">
         {messages.map((msg, i) => (

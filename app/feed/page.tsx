@@ -91,20 +91,30 @@ export default function FeedPage() {
         return;
       }
 
+      console.log('Inserting conversation:', { participant_ids: [user.id, playerId] });
+
       const { data: newConversation, error } = await supabase
         .from('conversations')
         .insert({ participant_ids: [user.id, playerId] })
         .select('id')
         .single();
 
+      console.log('Insert result:', { newConversation, error });
+
       if (error || !newConversation?.id) {
         throw error || new Error('Unable to create conversation');
       }
 
       router.push(`/dashboard/inbox/${newConversation.id}`);
-    } catch (error) {
-      console.error('Error opening chat:', error);
-      alert('Unable to open message thread.');
+    } catch (error: any) {
+      console.error('Error opening chat:', {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        error
+      });
+      alert('Unable to open message thread. Please try again.');
     }
   };
 
