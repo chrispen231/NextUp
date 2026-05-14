@@ -48,10 +48,12 @@ export default function FeedPage() {
               {clips.map((clip) => (
                 <div key={clip.id} className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
                   <div className="aspect-video bg-gray-900 flex items-center justify-center relative group">
-                    <img src={clip.thumbnail_url} alt={clip.title} className="absolute inset-0 w-full h-full object-cover opacity-80" />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                      <Play className="text-white fill-white" size={48} />
-                    </div>
+                    <video 
+                      src={clip.video_url} 
+                      className="absolute inset-0 w-full h-full object-cover" 
+                      controls
+                      preload="metadata"
+                    />
                   </div>
                   
                   <div className="p-5">
