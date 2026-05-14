@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
-import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2, Play } from 'lucide-react';
+import { Calendar, MapPin, Trophy, ShieldCheck, ArrowLeft, Mail, ExternalLink, Activity, Info, Loader2, Globe, Share2, Play, Heart, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PlayerProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,6 +12,10 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
   const [player, setPlayer] = useState<any>(null);
   const [clips, setClips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string>('PLAYER');
+  const [userStatus, setUserStatus] = useState<string>('UNVERIFIED');
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchPlayer = async () => {
@@ -30,11 +34,117 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
 
       if (playerResponse.data) setPlayer(playerResponse.data);
       if (clipsResponse.data) setClips(clipsResponse.data);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUser(user);
+        const { data: actor } = await supabase.from('actors').select('role, status').eq('id', user.id).single();
+        setUserRole(actor?.role || 'PLAYER');
+        setUserStatus(actor?.status || 'UNVERIFIED');
+
+        if (actor?.role && actor?.status === 'VERIFIED' && user.id !== resolvedParams.id) {
+          const { data: favorite } = await supabase
+            .from('player_favorites')
+            .select('id')
+            .eq('player_id', resolvedParams.id)
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          setIsFavorite(!!favorite?.id);
+        }
+      }
+
       setLoading(false);
     };
 
     fetchPlayer();
   }, [resolvedParams.id]);
+
+  const canMessage = () => {
+    return Boolean(
+      currentUser &&
+      currentUser.id !== resolvedParams.id &&
+      userStatus === 'VERIFIED' &&
+      ['PLAYER', 'AGENT', 'SCOUT', 'CLUB'].includes(userRole)
+    );
+  };
+
+  const canFavorite = () => {
+    return Boolean(
+      currentUser &&
+      currentUser.id !== resolvedParams.id &&
+      userStatus === 'VERIFIED' &&
+      ['AGENT', 'SCOUT', 'CLUB'].includes(userRole)
+    );
+  };
+
+  const openChatWithPlayer = async () => {
+    if (!currentUser) {
+      router.push('/login');
+      return;
+    }
+
+    if (currentUser.id === resolvedParams.id) return;
+
+    try {
+      const { data: existingConversation } = await supabase
+        .from('conversations')
+        .select('id')
+        .contains('participant_ids', [currentUser.id, resolvedParams.id])
+        .limit(1)
+        .maybeSingle();
+
+      if (existingConversation?.id) {
+        router.push(`/dashboard/inbox/${existingConversation.id}`);
+        return;
+      }
+
+      const { data: newConversation, error } = await supabase
+        .from('conversations')
+        .insert({ participant_ids: [currentUser.id, resolvedParams.id] })
+        .select('id')
+        .single();
+
+      if (error || !newConversation?.id) {
+        throw error || new Error('Unable to create conversation');
+      }
+
+      router.push(`/dashboard/inbox/${newConversation.id}`);
+    } catch (error) {
+      console.error('Error opening chat:', error);
+      alert('Unable to open message thread.');
+    }
+  };
+
+  const toggleFavorite = async () => {
+    if (!currentUser) {
+      router.push('/login');
+      return;
+    }
+
+    if (currentUser.id === resolvedParams.id) return;
+
+    try {
+      if (isFavorite) {
+        const { error } = await supabase
+          .from('player_favorites')
+          .delete()
+          .eq('player_id', resolvedParams.id)
+          .eq('user_id', currentUser.id);
+
+        if (!error) setIsFavorite(false);
+      } else {
+        const { error } = await supabase
+          .from('player_favorites')
+          .insert({ player_id: resolvedParams.id, user_id: currentUser.id });
+
+        if (!error) setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      alert('Unable to update favorites.');
+    }
+  };
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -113,17 +223,28 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                   </div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none mb-4 flex items-center justify-center gap-2">
-                  <Mail size={18} /> Contact Player
-                </button>
-                
-                <div className="flex justify-center gap-4">
-                  <button className="p-3 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    <Globe size={20} />
-                  </button>
-                  <button className="p-3 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl hover:text-blue-400 transition-colors">
-                    <Share2 size={20} />
-                  </button>
+                <div className="space-y-4 mb-8">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {canMessage() && (
+                      <button
+                        type="button"
+                        onClick={openChatWithPlayer}
+                        className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none flex items-center justify-center gap-2"
+                      >
+                        <MessageCircle size={18} /> Message
+                      </button>
+                    )}
+                    {canFavorite() && (
+                      <button
+                        type="button"
+                        onClick={toggleFavorite}
+                        className={`w-full py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${isFavorite ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                      >
+                        <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+                        {isFavorite ? 'Favorited' : 'Add to Favorites'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,6 +326,27 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
                       <div className="p-5">
                         <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">{clip.title || 'Highlight Reel'}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{clip.description || 'Player highlight clip'}</p>
+                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                          {canMessage() && (
+                            <button
+                              type="button"
+                              onClick={openChatWithPlayer}
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-2xl text-sm font-semibold hover:bg-blue-700 transition-colors"
+                            >
+                              <MessageCircle size={16} /> Message
+                            </button>
+                          )}
+                          {canFavorite() && (
+                            <button
+                              type="button"
+                              onClick={toggleFavorite}
+                              className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-semibold transition-colors ${isFavorite ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                            >
+                              <Heart size={16} fill={isFavorite ? 'currentColor' : 'none'} />
+                              {isFavorite ? 'Favorited' : 'Favorite'}
+                            </button>
+                          )}
+                        </div>
                         <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
                           <span>{new Date(clip.created_at).toLocaleDateString()}</span>
                           <span>{clip.tags?.length ? `${clip.tags.length} tag${clip.tags.length === 1 ? '' : 's'}` : 'No tags'}</span>

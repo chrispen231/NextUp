@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
 import { Loader2, Play, Heart, MessageCircle, Share2, Tag, Send } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
@@ -39,17 +40,21 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<any>(null);
+  const [userStatus, setUserStatus] = useState<string>('UNVERIFIED');
   const [comments, setComments] = useState<{[clipId: string]: Comment[]}>({});
   const [showComments, setShowComments] = useState<{[clipId: string]: boolean}>({});
   const [newComment, setNewComment] = useState<{[clipId: string]: string}>({});
+
+  const router = useRouter();
 
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        const { data: actor } = await supabase.from('actors').select('role').eq('id', user.id).single();
+        const { data: actor } = await supabase.from('actors').select('role, status').eq('id', user.id).single();
         setRole(actor?.role || 'PLAYER');
+        setUserStatus(actor?.status || 'UNVERIFIED');
       }
 
       await fetchClips();
@@ -58,6 +63,50 @@ export default function FeedPage() {
 
     init();
   }, []);
+
+  const canMessagePlayer = (playerId: string) => {
+    if (!user || !role || userStatus !== 'VERIFIED') return false;
+    if (playerId === user.id) return false;
+    return ['PLAYER', 'AGENT', 'SCOUT', 'CLUB'].includes(role);
+  };
+
+  const openChatWithPlayer = async (playerId: string) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (playerId === user.id) return;
+
+    try {
+      const { data: existingConversation } = await supabase
+        .from('conversations')
+        .select('id')
+        .contains('participant_ids', [user.id, playerId])
+        .limit(1)
+        .maybeSingle();
+
+      if (existingConversation?.id) {
+        router.push(`/dashboard/inbox/${existingConversation.id}`);
+        return;
+      }
+
+      const { data: newConversation, error } = await supabase
+        .from('conversations')
+        .insert({ participant_ids: [user.id, playerId] })
+        .select('id')
+        .single();
+
+      if (error || !newConversation?.id) {
+        throw error || new Error('Unable to create conversation');
+      }
+
+      router.push(`/dashboard/inbox/${newConversation.id}`);
+    } catch (error) {
+      console.error('Error opening chat:', error);
+      alert('Unable to open message thread.');
+    }
+  };
 
   const handleLike = async (clipId: string) => {
     if (!user) return;
@@ -237,24 +286,36 @@ export default function FeedPage() {
                   </div>
                   
                   <div className="p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 overflow-hidden">
-                        {clip.player?.metadata?.avatar_url ? (
-                          <img src={clip.player.metadata.avatar_url} alt={clip.player.display_name} className="w-full h-full object-cover" />
-                        ) : (
-                          clip.player?.display_name?.charAt(0)
-                        )}
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 overflow-hidden">
+                          {clip.player?.metadata?.avatar_url ? (
+                            <img src={clip.player.metadata.avatar_url} alt={clip.player.display_name} className="w-full h-full object-cover" />
+                          ) : (
+                            clip.player?.display_name?.charAt(0)
+                          )}
+                        </div>
+                        <div>
+                          <Link
+                            href={`/players/${clip.player.id}`}
+                            className="font-bold text-gray-900 dark:text-white text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          >
+                            {clip.player?.display_name}
+                          </Link>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Posted {new Date(clip.created_at).toLocaleDateString()}</p>
+                        </div>
                       </div>
-                      <div>
-                        <Link
-                          href={`/players/${clip.player.id}`}
-                          className="font-bold text-gray-900 dark:text-white text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      {canMessagePlayer(clip.player.id) && (
+                        <button
+                          type="button"
+                          onClick={() => openChatWithPlayer(clip.player.id)}
+                          className="flex items-center gap-2 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors"
                         >
-                          {clip.player?.display_name}
-                        </Link>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Posted {new Date(clip.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>                    
+                          <MessageCircle size={14} />
+                          Message
+                        </button>
+                      )}
+                    </div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-2">{clip.title}</h3>
                     <div className="flex gap-2 mb-4">
                       {clip.tags?.map((tag: string) => (
