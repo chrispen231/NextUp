@@ -108,11 +108,11 @@ export default function LFA_CenterPage() {
 
                 <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-6 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
                   <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-900 dark:text-white"><Shield size={24} className="text-blue-600" /> League Standings</h2>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto no-scrollbar pb-2">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="text-[10px] uppercase text-gray-400 border-b border-gray-100 dark:border-gray-800">
-                          <th className="py-3">Team</th>
+                          <th className="py-3 min-w-[150px]">Team</th>
                           <th className="py-3 text-right">PL</th>
                           <th className="py-3 text-right">W</th>
                           <th className="py-3 text-right">D</th>
@@ -124,7 +124,7 @@ export default function LFA_CenterPage() {
                       <tbody className="text-gray-900 dark:text-gray-100">
                         {standings.map((team, i) => (
                           <tr key={team.id} className="border-b border-gray-100 dark:border-gray-800 text-sm">
-                            <td className="py-4 font-bold">{i+1}. {team.team_name}</td>
+                            <td className="py-4 font-bold truncate">{i+1}. {team.team_name}</td>
                             <td className="py-4 text-right">{team.played}</td>
                             <td className="py-4 text-right">{team.won}</td>
                             <td className="py-4 text-right">{team.drawn}</td>
@@ -136,6 +136,7 @@ export default function LFA_CenterPage() {
                       </tbody>
                     </table>
                   </div>
+                  <p className="text-[10px] text-gray-400 md:hidden mt-2 text-center uppercase tracking-widest font-bold">Swipe to view →</p>
                 </div>
               </div>
             </div>
