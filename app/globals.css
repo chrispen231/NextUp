@@ -35,3 +35,14 @@ body {
 
 /* Ensure Tailwind's dark: variant works with the .dark class */
 @variant dark (&:where(.dark, .dark *));
+
+/* Utility to hide scrollbar while maintaining functionality */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
