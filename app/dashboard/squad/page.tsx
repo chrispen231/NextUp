@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/infrastructure/database/supabase';
 import { Loader2, Users, Plus, Trash2, User, Hash, Shield, Save, Search } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SquadManagementPage() {
   const [squad, setSquad] = useState<any[]>([]);
