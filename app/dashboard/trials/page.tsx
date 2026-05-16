@@ -1,18 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/infrastructure/database/supabase';
 import { Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TrialsManagementPage() {
+  const router = useRouter();
   const [trials, setTrials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTrials = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
+      // Fetch role from actors table for security
+      const { data: actor } = await supabase.from('actors').select('role').eq('id', user.id).single();
+      
+      if (!actor || (actor.role !== 'CLUB' && actor.role !== 'ADMIN')) {
+        router.push('/dashboard');
+        return;
+      }
 
       const { data } = await supabase
         .from('trials')
@@ -24,7 +37,7 @@ export default function TrialsManagementPage() {
       setLoading(false);
     };
     fetchTrials();
-  }, []);
+  }, [router]);
 
   if (loading) return <div className="p-8"><Loader2 className="animate-spin text-blue-600" /></div>;
 

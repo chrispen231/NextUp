@@ -107,6 +107,7 @@ export default function ProfileEditorPage() {
             organization: formData.organization,
             license_number: formData.licenseNumber,
             avatar_url: formData.avatarUrl,
+            cover_url: formData.coverUrl,
           }
         })
         .eq('id', user.id);

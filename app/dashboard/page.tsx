@@ -102,7 +102,7 @@ export default function DashboardPage() {
         </p>
         
         <div className="mt-6 flex flex-wrap gap-4">
-          {role === 'CLUB' && (
+          {(role === 'CLUB' || role === 'ADMIN') && (
             <Link href="/dashboard/post-trial" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all">
               Post a Trial
             </Link>
@@ -127,7 +127,7 @@ export default function DashboardPage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm transition-colors">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-xl text-gray-900 dark:text-white">My Posted Trials</h3>
-              <Link href="/dashboard/post-trial" className="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">View All</Link>
+              <Link href="/dashboard/trials" className="text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline">View All</Link>
             </div>
             {fetchingData ? (
               <div className="flex justify-center py-10"><Loader2 className="animate-spin text-blue-600" /></div>

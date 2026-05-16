@@ -155,17 +155,34 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ id: st
   );
 
   const metadata = player.metadata || {};
+  const coverUrl = metadata.cover_url || metadata.coverUrl;
   const stats = metadata.stats || { matches: 0, goals: 0, assists: 0, minutes: 0 };
   const achievements = metadata.achievements || [];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 transition-colors">
       {/* Hero Header */}
-      <div className="bg-blue-600 h-64 md:h-80 w-full relative">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="max-w-6xl mx-auto px-6 pt-12">
-          <button onClick={() => router.back()} className="flex items-center text-sm text-blue-100 hover:text-white mb-6 transition-colors">
-            <ArrowLeft size={16} className="mr-1" /> Back
+      <div className="h-64 md:h-80 w-full relative overflow-hidden bg-blue-600">
+        {coverUrl ? (
+          <img 
+            src={coverUrl} 
+            alt="Cover" 
+            className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-700"
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 bg-center bg-cover"></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+        <div className="max-w-6xl mx-auto px-6 pt-12 relative z-10">
+          <button 
+            onClick={() => router.back()} 
+            className="flex items-center text-sm text-white font-bold hover:text-blue-100 mb-6 transition-colors bg-black/20 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 w-fit"
+          >
+            <ArrowLeft size={16} className="mr-2" /> Back to Explorers
           </button>
         </div>
       </div>

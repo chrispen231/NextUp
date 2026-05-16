@@ -9,6 +9,7 @@ export default function TrialsPage() {
   const [trials, setTrials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTrials = async () => {
@@ -19,6 +20,13 @@ export default function TrialsPage() {
         .order('trial_date', { ascending: true });
       
       if (data) setTrials(data);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: actor } = await supabase.from('actors').select('role').eq('id', user.id).single();
+        if (actor) setUserRole(actor.role);
+      }
+
       setLoading(false);
     };
 
@@ -91,13 +99,16 @@ export default function TrialsPage() {
           </div>
         )}
         
-        <div className="mt-12 bg-blue-600 rounded-3xl p-10 text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">Are you hosting a trial?</h2>
-          <p className="text-blue-100 mb-8 max-w-xl mx-auto">List your trial on NextUp to reach thousands of verified players across Liberia and beyond.</p>
-          <Link href="/dashboard/post-trial" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all inline-block">
-            Post a Trial
-          </Link>
-        </div>
+        {/* Only show Post Trial CTA for Clubs and Admins */}
+        {(userRole === 'CLUB' || userRole === 'ADMIN') && (
+          <div className="mt-12 bg-blue-600 rounded-3xl p-10 text-white text-center">
+            <h2 className="text-3xl font-bold mb-4">Are you hosting a trial?</h2>
+            <p className="text-blue-100 mb-8 max-w-xl mx-auto">List your trial on NextUp to reach thousands of verified players across Liberia and beyond.</p>
+            <Link href="/dashboard/post-trial" className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all inline-block">
+              Post a Trial
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

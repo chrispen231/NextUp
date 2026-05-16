@@ -34,9 +34,12 @@ export default function PostTrialPage() {
         return;
       }
       
-      // Verify role is CLUB
-      if (user.user_metadata.role !== 'CLUB') {
-        setError('Only Club accounts can post trials.');
+      // Fetch role from actors table for security
+      const { data: actor } = await supabase.from('actors').select('role').eq('id', user.id).single();
+      
+      if (!actor || (actor.role !== 'CLUB' && actor.role !== 'ADMIN')) {
+        router.push('/dashboard');
+        return;
       }
       
       setUser(user);
